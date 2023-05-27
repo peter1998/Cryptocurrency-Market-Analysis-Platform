@@ -1,0 +1,18 @@
+body {
+  background-color: #202020;
+  color: #ffffff;
+}
+
+.dash-core-components .Select-control {
+  background-color: #303030;
+  color: #ffffff;
+}
+
+.dash-core-components .Select-menu-outer {
+  background-color: #303030;
+  color: #ffffff;
+}
+
+.dash-core-components .Select-arrow-zone {
+  color: #ffffff;
+}
