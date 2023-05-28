@@ -1,3 +1,4 @@
+# E:\TODO 1337\My Projects\Cryptocurrency-Market-Analysis-Platform\dash_app.py
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -62,6 +63,38 @@ histogram_layout = go.Layout(
 
 histogram_fig = go.Figure(data=[histogram], layout=histogram_layout)
 
+# Create bar chart for trading volume
+bar_chart = go.Bar(
+    x=df.index,  # Use the DataFrame index as the x-axis
+    y=df['total_volume'],
+    name='Trading Volume'
+)
+
+bar_chart_layout = go.Layout(
+    title='Trading Volume of Different Cryptocurrencies',
+    xaxis=dict(
+        title='Cryptocurrency'
+    ),
+    yaxis=dict(
+        title='Trading Volume'
+    ),
+)
+
+bar_chart_fig = go.Figure(data=[bar_chart], layout=bar_chart_layout)
+
+# Create pie chart for market cap
+pie_chart = go.Pie(
+    labels=df.index,  # Use the DataFrame index as the labels
+    values=df['market_cap'],
+    name='Market Cap'
+)
+
+pie_chart_layout = go.Layout(
+    title='Market Cap Distribution Among Different Cryptocurrencies'
+)
+
+pie_chart_fig = go.Figure(data=[pie_chart], layout=pie_chart_layout)
+
 app.layout = html.Div(children=[
     html.H1(children='Cryptocurrency Market Analysis Platform'),
     dcc.Graph(
@@ -71,6 +104,14 @@ app.layout = html.Div(children=[
     dcc.Graph(
         id='histogram',
         figure=histogram_fig
+    ),
+    dcc.Graph(
+        id='bar-chart',
+        figure=bar_chart_fig
+    ),
+    dcc.Graph(
+        id='pie-chart',
+        figure=pie_chart_fig
     )
 ])
 
