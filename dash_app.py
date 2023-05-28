@@ -2,7 +2,7 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
-from main import y_test, predictions
+from main import y_test, predictions, df  # Import df from main.py
 
 app = dash.Dash(__name__)
 
@@ -40,11 +40,37 @@ layout = go.Layout(
 
 fig = go.Figure(data=[scatter], layout=layout)
 
+# Create histogram
+histogram = go.Histogram(
+    x=df['current_price'],
+    name='Current Price',
+    marker=dict(
+        color='rgb(0, 0, 100)'
+    )
+)
+
+histogram_layout = go.Layout(
+    title='Current Price Distribution',
+    xaxis=dict(
+        title='Current Price'
+    ),
+    yaxis=dict(
+        title='Count'
+    ),
+    bargap=0.2
+)
+
+histogram_fig = go.Figure(data=[histogram], layout=histogram_layout)
+
 app.layout = html.Div(children=[
     html.H1(children='Cryptocurrency Market Analysis Platform'),
     dcc.Graph(
         id='scatter-plot',
         figure=fig
+    ),
+    dcc.Graph(
+        id='histogram',
+        figure=histogram_fig
     )
 ])
 
