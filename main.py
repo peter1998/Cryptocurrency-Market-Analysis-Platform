@@ -1,13 +1,12 @@
 from data_collection import fetch_data
 from data_processing import process_data
-from machine_learning import train_model
-from presentation import print_predictions
+from machine_learning import train_and_predict
 
 data = fetch_data()
 if data is not None:
     df = process_data(data)
-    model = train_model(df)
-    # Replace 'current_price' with your actual target variable
-    print_predictions(model, df.drop('current_price', axis=1))
+    y_test, predictions = train_and_predict(df)
+    print("Actual values:\n", y_test)
+    print("Predicted values:\n", predictions)
 else:
     print("Failed to fetch data")
