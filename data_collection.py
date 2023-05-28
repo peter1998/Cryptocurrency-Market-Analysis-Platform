@@ -1,5 +1,7 @@
+
 import requests
 import time
+import pandas as pd
 
 
 def fetch_data():
@@ -17,9 +19,11 @@ def fetch_data():
     return None  # If the request failed all 5 times, return None
 
 
-# For testing, print the data
+# Fetch the data
 data = fetch_data()
-if data is not None:
-    print(data)
-else:
-    print("Failed to fetch data")
+
+# Convert the data to a DataFrame
+df = pd.DataFrame(data)
+
+# Print the first few rows of the DataFrame
+print(df.head())
