@@ -7,7 +7,7 @@ cg = CoinGeckoAPI()
 
 
 def fetch_current_market_data(per_page=100):
-    url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&per_page={per_page}"
+    url = f"https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&per_page={per_page}"
     for i in range(5):  # Try the request up to 5 times
         try:
             response = requests.get(url)
