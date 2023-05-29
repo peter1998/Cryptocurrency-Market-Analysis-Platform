@@ -66,21 +66,28 @@ histogram = go.Histogram(
     name='Current Price',
     marker=dict(
         color='rgb(0, 0, 100)'
+    ),
+    hoverinfo='x+y',  # Show the exact number of cryptocurrencies in each price bin
+    hoverlabel=dict(  # Customize the hover label
+        bgcolor='white',  # Background color
+        font_size=16,  # Font size
+        font_family='Rockwell'  # Font family
     )
 )
 
 histogram_layout = go.Layout(
-    title='Current Price Distribution',
+    title='Current Price Distribution of Top 18 Cryptocurrencies',  # Add a title
     xaxis=dict(
-        title='Current Price'
+        title='Current Price (USD)'  # Label the x axis
     ),
     yaxis=dict(
-        title='Count'
+        title='Number of Cryptocurrencies'  # Label the y axis
     ),
     bargap=0.2
 )
 
 histogram_fig = go.Figure(data=[histogram], layout=histogram_layout)
+
 
 bar_chart = go.Bar(
     x=df['id'],
