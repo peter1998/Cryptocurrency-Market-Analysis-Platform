@@ -21,10 +21,17 @@ def fetch_current_market_data():
     return None  # If the request failed all 5 times, return None
 
 
-def fetch_historical_data(id, days):
-    data = cg.get_coin_market_chart_by_id(id=id, vs_currency='usd', days=days)
-    df = pd.DataFrame(data['prices'], columns=['time', 'price'])
-    df['time'] = pd.to_datetime(df['time'], unit='ms')
+def fetch_historical_data(crypto_id, days):
+    url = f'https://api.coingecko.com/api/v3/coins/{crypto_id}/market_chart?vs_currency=usd&days={days}'
+    response = requests.get(url)
+    data = response.json()
+    df = pd.DataFrame(data)
+    df['time'] = pd.to_datetime(df['prices'].apply(lambda x: x[0]), unit='ms')
+    df['current_price'] = df['prices'].apply(lambda x: x[1])
+    df['market_cap'] = df['market_caps'].apply(lambda x: x[1])
+    # Add this line if the API provides 'total_volume' data
+    df['total_volume'] = df['total_volumes'].apply(lambda x: x[1])
+
     return df
 
 

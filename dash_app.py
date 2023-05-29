@@ -26,6 +26,7 @@ dropdown = dcc.Dropdown(
     }
 )
 
+
 time_range_dropdown = dcc.Dropdown(
     id='time-range-dropdown',
     options=[
@@ -35,6 +36,21 @@ time_range_dropdown = dcc.Dropdown(
         {'label': 'Last 1 year', 'value': 365}
     ],
     value=30,  # Default value
+    style={
+        'backgroundColor': '#d6d6d6',
+        'color': '#000000'
+    }
+)
+
+data_dropdown = dcc.Dropdown(
+    id='data-dropdown',
+    options=[
+        {'label': 'Current Price', 'value': 'current_price'},
+        {'label': 'Market Cap', 'value': 'market_cap'},
+        {'label': 'Total Volume', 'value': 'total_volume'},
+
+    ],
+    value='current_price',  # Default value
     style={
         'backgroundColor': '#d6d6d6',
         'color': '#000000'
@@ -246,28 +262,29 @@ scatter_plot_fig = go.Figure(data=[scatter_plot], layout=scatter_plot_layout)
 @app.callback(
     Output('line-chart', 'figure'),
     [Input('dropdown', 'value'),
-     Input('time-range-dropdown', 'value')]
+     Input('time-range-dropdown', 'value'),
+     Input('data-dropdown', 'value')]
 )
-def update_line_chart(selected_value, selected_time_range):
+def update_line_chart(selected_value, selected_time_range, selected_data):
     # Fetch historical data for the selected cryptocurrency and time range
     df_historical = fetch_historical_data(
         df[df['symbol'] == selected_value]['id'].values[0], selected_time_range)
 
-    # Create a line chart for price changes over time
+    # Create a line chart for the selected data over time
     line_chart = go.Scatter(
         x=df_historical['time'],
-        y=df_historical['price'],
+        y=df_historical[selected_data],
         mode='lines',
-        name='Price'
+        name=selected_data
     )
 
     line_chart_layout = go.Layout(
-        title=f'Price Changes Over Time for {selected_value.capitalize()}',
+        title=f'{selected_data.capitalize()} Changes Over Time for {selected_value.capitalize()}',
         xaxis=dict(
             title='Time'
         ),
         yaxis=dict(
-            title='Price'
+            title=selected_data.capitalize()
         ),
     )
 
@@ -324,6 +341,7 @@ app.layout = html.Div(children=[
     html.Div(id='table-container', children=[table]),
     html.Div(id='time-range-dropdown-container',
              children=[time_range_dropdown]),
+    html.Div(id='data-dropdown-container', children=[data_dropdown]),
 ])
 
 if __name__ == '__main__':
