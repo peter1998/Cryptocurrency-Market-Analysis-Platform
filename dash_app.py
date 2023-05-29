@@ -26,6 +26,21 @@ dropdown = dcc.Dropdown(
     }
 )
 
+time_range_dropdown = dcc.Dropdown(
+    id='time-range-dropdown',
+    options=[
+        {'label': 'Last 7 days', 'value': 7},
+        {'label': 'Last 30 days', 'value': 30},
+        {'label': 'Last 90 days', 'value': 90},
+        {'label': 'Last 1 year', 'value': 365}
+    ],
+    value=30,  # Default value
+    style={
+        'backgroundColor': '#d6d6d6',
+        'color': '#000000'
+    }
+)
+
 
 @app.callback(
     Output('table', 'data'),
@@ -230,12 +245,13 @@ scatter_plot_fig = go.Figure(data=[scatter_plot], layout=scatter_plot_layout)
 
 @app.callback(
     Output('line-chart', 'figure'),
-    Input('dropdown', 'value')
+    [Input('dropdown', 'value'),
+     Input('time-range-dropdown', 'value')]
 )
-def update_line_chart(selected_value):
-    # Fetch historical data for the selected cryptocurrency
+def update_line_chart(selected_value, selected_time_range):
+    # Fetch historical data for the selected cryptocurrency and time range
     df_historical = fetch_historical_data(
-        df[df['symbol'] == selected_value]['id'].values[0], 30)
+        df[df['symbol'] == selected_value]['id'].values[0], selected_time_range)
 
     # Create a line chart for price changes over time
     line_chart = go.Scatter(
@@ -305,7 +321,9 @@ app.layout = html.Div(children=[
         id='pie-chart',
     ),
     html.Div(id='dropdown-container', children=[dropdown]),
-    html.Div(id='table-container', children=[table])
+    html.Div(id='table-container', children=[table]),
+    html.Div(id='time-range-dropdown-container',
+             children=[time_range_dropdown]),
 ])
 
 if __name__ == '__main__':
