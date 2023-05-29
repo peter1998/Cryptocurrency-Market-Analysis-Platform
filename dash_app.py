@@ -5,6 +5,7 @@ import plotly.graph_objs as go
 from dash.dependencies import Input, Output
 from data_collection import df, fetch_historical_data
 import numpy as np
+from dash import html
 
 app = dash.Dash(__name__)
 
@@ -76,14 +77,42 @@ histogram = go.Histogram(
 )
 
 histogram_layout = go.Layout(
-    title='Current Price Distribution of Top 18 Cryptocurrencies',  # Add a title
+    title='Current Price Distribution of Top Cryptocurrencies',
     xaxis=dict(
-        title='Current Price (USD)'  # Label the x axis
+        title='Current Price'
     ),
     yaxis=dict(
-        title='Number of Cryptocurrencies'  # Label the y axis
+        title='Count'
     ),
-    bargap=0.2
+    bargap=0.2,
+    annotations=[
+        dict(
+            x=0.5,
+            y=-0.3,  # Adjust the y position to avoid overlap with xaxis title
+            showarrow=False,
+            text="This histogram shows the distribution of current prices for the top cryptocurrencies. It helps us understand the common price range for these cryptocurrencies.",
+            xref="paper",
+            yref="paper",
+            font=dict(
+                size=15,  # Adjust font size
+                color="black"  # Adjust font color
+            ),
+            align="center",  # Center align the text
+            bordercolor='black',  # Add border color
+            borderwidth=2,  # Add border width
+            borderpad=4,  # Add padding within the border
+            bgcolor='white',  # Add background color
+            opacity=0.8  # Adjust the opacity
+        )
+    ],
+    autosize=True,  # Enable autosizing to fit the plot within the div
+    margin=dict(
+        l=50,  # Adjust left margin
+        r=50,  # Adjust right margin
+        b=100,  # Adjust bottom margin to accommodate the annotation
+        t=100,  # Adjust top margin
+        pad=10  # Add padding
+    )
 )
 
 histogram_fig = go.Figure(data=[histogram], layout=histogram_layout)
@@ -105,6 +134,34 @@ bar_chart_layout = go.Layout(
     yaxis=dict(
         title='Market Cap (log scale)'
     ),
+    annotations=[
+        dict(
+            x=0.5,
+            y=-0.3,
+            showarrow=False,
+            text="This bar chart shows the market capitalization of the top 18 cryptocurrencies. It helps us understand the size of each cryptocurrency in the market.",
+            xref="paper",
+            yref="paper",
+            font=dict(
+                size=15,
+                color="black"
+            ),
+            align="center",
+            bordercolor='black',
+            borderwidth=2,
+            borderpad=4,
+            bgcolor='white',
+            opacity=0.8
+        )
+    ],
+    autosize=True,
+    margin=dict(
+        l=50,
+        r=50,
+        b=100,
+        t=100,
+        pad=10
+    )
 )
 
 bar_chart_fig = go.Figure(data=[bar_chart], layout=bar_chart_layout)
@@ -135,7 +192,35 @@ scatter_plot_layout = go.Layout(
     yaxis=dict(
         title='Total Volume (log scale)'
     ),
-    hovermode='closest'
+    hovermode='closest',
+    annotations=[
+        dict(
+            x=0.5,
+            y=-0.3,
+            showarrow=False,
+            text="This scatter plot shows the relationship between the current price and total volume of the top 18 cryptocurrencies. It helps us understand how the price and volume are correlated.",
+            xref="paper",
+            yref="paper",
+            font=dict(
+                size=13,
+                color="black"
+            ),
+            align="center",
+            bordercolor='black',
+            borderwidth=2,
+            borderpad=4,
+            bgcolor='white',
+            opacity=0.8
+        )
+    ],
+    autosize=True,
+    margin=dict(
+        l=50,
+        r=50,
+        b=100,
+        t=100,
+        pad=10
+    )
 )
 
 scatter_plot_fig = go.Figure(data=[scatter_plot], layout=scatter_plot_layout)
