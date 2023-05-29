@@ -16,8 +16,13 @@ df = df[df['id'].isin(top_cryptos)]
 # Add a dropdown menu to the Dash app
 dropdown = dcc.Dropdown(
     id='dropdown',
-    options=[{'label': i, 'value': i} for i in df['id'].unique()],
-    value=df['id'].iloc[0]
+    options=[{'label': html.Div([html.Img(src=i['image'], style={'height': '20px', 'width': '20px'}),
+                                i['symbol']]), 'value': i['symbol']} for i in df.to_dict('records')],
+    value=df['symbol'].iloc[0],
+    style={
+        'backgroundColor': '#d6d6d6',
+        'color': '#000000'
+    }
 )
 
 
@@ -26,7 +31,7 @@ dropdown = dcc.Dropdown(
     Input('dropdown', 'value')
 )
 def update_table(selected_value):
-    filtered_df = df[df['id'] == selected_value]
+    filtered_df = df[df['symbol'] == selected_value]
     return filtered_df.to_dict('records')
 
 
@@ -34,7 +39,27 @@ table = dash_table.DataTable(
     id='table',
     columns=[{"name": i, "id": i} for i in df.columns if i != 'roi'],
     data=df.to_dict('records'),
+    style_data_conditional=[
+        {
+            'if': {'row_index': 'odd'},
+            'backgroundColor': 'rgb(248, 248, 248)'
+        },
+        {
+            'if': {'row_index': 'even'},
+            'backgroundColor': 'rgb(255, 255, 255)'
+        },
+        {
+            'if': {'state': 'active'},  # 'active' | 'selected'
+            'backgroundColor': 'rgb(210, 210, 210)',
+            'border': '1px solid rgb(0, 116, 217)'
+        },
+    ],
+    style_header={
+        'backgroundColor': 'rgb(230, 230, 230)',
+        'fontWeight': 'bold'
+    },
 )
+
 
 histogram = go.Histogram(
     x=df['current_price'],
@@ -117,7 +142,8 @@ scatter_plot_fig = go.Figure(data=[scatter_plot], layout=scatter_plot_layout)
 )
 def update_line_chart(selected_value):
     # Fetch historical data for the selected cryptocurrency
-    df_historical = fetch_historical_data(selected_value, 30)
+    df_historical = fetch_historical_data(
+        df[df['symbol'] == selected_value]['id'].values[0], 30)
 
     # Create a line chart for price changes over time
     line_chart = go.Scatter(
@@ -141,21 +167,19 @@ def update_line_chart(selected_value):
 
     return line_chart_fig
 
-# Update the pie chart based on the selected value
-
 
 @app.callback(
     Output('pie-chart', 'figure'),
     Input('dropdown', 'value')
 )
 def update_pie_chart(selected_value):
-    # Filter the dataframe based on the selected value
-    filtered_df = df[df['id'] == selected_value]
+    # Ignore the selected value and use the entire dataframe
+    # filtered_df = df[df['symbol'] == selected_value]
 
     # Create a pie chart of market cap distribution
     pie_chart = go.Pie(
-        labels=filtered_df['id'],
-        values=filtered_df['market_cap'],
+        labels=df['id'],
+        values=df['market_cap'],
         name='Market Cap'
     )
 
