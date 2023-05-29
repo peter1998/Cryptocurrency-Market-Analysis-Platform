@@ -2,12 +2,15 @@ import dash
 from dash import dcc, html
 import dash_table
 import plotly.graph_objs as go
-from dash.dependencies import Input, Output  # Add this line
-# Import df from data_collection.py
+from dash.dependencies import Input, Output
 from data_collection import df, fetch_historical_data
 
-
 app = dash.Dash(__name__)
+
+# Filter the dataframe to include only the top 18 cryptocurrencies
+top_cryptos = ['bitcoin', 'ethereum', 'tether', 'binancecoin', 'usd-coin', 'xrp', 'cardano', 'dogecoin', 'polygon',
+               'solana', 'tron', 'litecoin', 'polkadot', 'binance-usd', 'shiba-inu', 'avalanche-2', 'dai', 'wrapped-bitcoin']
+df = df[df['id'].isin(top_cryptos)]
 
 # Add a dropdown menu to the Dash app
 dropdown = dcc.Dropdown(
@@ -31,8 +34,7 @@ def update_table(selected_value):
 # Create a table to display the data
 table = dash_table.DataTable(
     id='table',
-    columns=[{"name": i, "id": i}
-             for i in df.columns if i != 'roi'],  # Exclude 'roi' column
+    columns=[{"name": i, "id": i} for i in df.columns if i != 'roi'],
     data=df.to_dict('records'),
 )
 
@@ -66,7 +68,7 @@ bar_chart = go.Bar(
 )
 
 bar_chart_layout = go.Layout(
-    title='Market Cap of Different Cryptocurrencies',
+    title='Market Cap of Top 18 Cryptocurrencies',
     xaxis=dict(
         title='Cryptocurrency'
     ),
@@ -89,17 +91,19 @@ scatter_plot = go.Scatter(
             width=2,
             color='rgb(0, 0, 0)'
         )
-    )
+    ),
+    text=df['id']  # Add cryptocurrency names as hover text
 )
 
 scatter_plot_layout = go.Layout(
-    title='Current Price vs Total Volume',
+    title='Current Price vs Total Volume for Top 18 Cryptocurrencies',
     xaxis=dict(
         title='Current Price'
     ),
     yaxis=dict(
         title='Total Volume'
     ),
+    hovermode='closest'  # Update hover mode
 )
 
 scatter_plot_fig = go.Figure(data=[scatter_plot], layout=scatter_plot_layout)
@@ -118,13 +122,13 @@ def update_line_chart(selected_value):
     # Create a line chart for price changes over time
     line_chart = go.Scatter(
         x=df_historical['time'],
-        y=df_historical['prices'],
+        y=df_historical['price'],
         mode='lines',
         name='Price'
     )
 
     line_chart_layout = go.Layout(
-        title='Price Changes Over Time',
+        title=f'Price Changes Over Time for {selected_value.capitalize()}',
         xaxis=dict(
             title='Time'
         ),
@@ -156,7 +160,7 @@ def update_pie_chart(selected_value):
     )
 
     pie_chart_layout = go.Layout(
-        title='Market Cap Distribution',
+        title='Market Cap Distribution for Top 18 Cryptocurrencies',
     )
 
     pie_chart_fig = go.Figure(data=[pie_chart], layout=pie_chart_layout)
