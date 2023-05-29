@@ -6,8 +6,8 @@ from pycoingecko import CoinGeckoAPI
 cg = CoinGeckoAPI()
 
 
-def fetch_current_market_data(per_page=100):
-    url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&per_page={per_page}"
+def fetch_current_market_data():
+    url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd"
     for i in range(5):  # Try the request up to 5 times
         try:
             response = requests.get(url)
@@ -30,7 +30,7 @@ def fetch_historical_data(id, days):
 
 # Fetch the current market data
 market_data = fetch_current_market_data()
-
+print(market_data)
 # Convert the market data to a DataFrame
 df = pd.DataFrame(market_data)  # Renamed to df
 
