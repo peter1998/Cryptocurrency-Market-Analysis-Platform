@@ -4,6 +4,7 @@ import dash_table
 import plotly.graph_objs as go
 from dash.dependencies import Input, Output
 from data_collection import df, fetch_historical_data
+import numpy as np
 
 app = dash.Dash(__name__)
 
@@ -19,8 +20,6 @@ dropdown = dcc.Dropdown(
     value=df['id'].iloc[0]
 )
 
-# Update the table based on the selected value
-
 
 @app.callback(
     Output('table', 'data'),
@@ -31,14 +30,12 @@ def update_table(selected_value):
     return filtered_df.to_dict('records')
 
 
-# Create a table to display the data
 table = dash_table.DataTable(
     id='table',
     columns=[{"name": i, "id": i} for i in df.columns if i != 'roi'],
     data=df.to_dict('records'),
 )
 
-# Create a histogram for current price
 histogram = go.Histogram(
     x=df['current_price'],
     name='Current Price',
@@ -60,11 +57,12 @@ histogram_layout = go.Layout(
 
 histogram_fig = go.Figure(data=[histogram], layout=histogram_layout)
 
-# Create a bar chart for market cap
 bar_chart = go.Bar(
     x=df['id'],
-    y=df['market_cap'],
-    name='Market Cap'
+    y=np.log(df['market_cap']),  # Use log scale for large values
+    name='Market Cap',
+    text=df['id'],  # Add cryptocurrency names as hover text
+    hoverinfo='text+y'  # Show hover info
 )
 
 bar_chart_layout = go.Layout(
@@ -73,26 +71,28 @@ bar_chart_layout = go.Layout(
         title='Cryptocurrency'
     ),
     yaxis=dict(
-        title='Market Cap'
+        title='Market Cap (log scale)'
     ),
 )
 
 bar_chart_fig = go.Figure(data=[bar_chart], layout=bar_chart_layout)
 
-# Create a scatter plot for current price vs total volume
 scatter_plot = go.Scatter(
     x=df['current_price'],
-    y=df['total_volume'],
+    y=np.log(df['total_volume']),  # Use log scale for large values
     mode='markers',
     marker=dict(
         size=10,
-        color='rgba(152, 0, 0, .8)',
+        # Use different colors for different cryptocurrencies
+        color=df['id'].astype('category').cat.codes,
+        colorscale='Rainbow',  # Choose a colorscale
         line=dict(
             width=2,
             color='rgb(0, 0, 0)'
         )
     ),
-    text=df['id']  # Add cryptocurrency names as hover text
+    text=df['id'],  # Add cryptocurrency names as hover text
+    hoverinfo='text+x+y'  # Show hover info
 )
 
 scatter_plot_layout = go.Layout(
@@ -101,9 +101,9 @@ scatter_plot_layout = go.Layout(
         title='Current Price'
     ),
     yaxis=dict(
-        title='Total Volume'
+        title='Total Volume (log scale)'
     ),
-    hovermode='closest'  # Update hover mode
+    hovermode='closest'
 )
 
 scatter_plot_fig = go.Figure(data=[scatter_plot], layout=scatter_plot_layout)
