@@ -43,6 +43,11 @@ def process_data(data):
     # Check for inconsistencies in data types
     print("Data types in each column:\n", df_no_outliers.dtypes)
 
+    # Create new feature 'market_cap_to_volume_ratio'
+    df_no_outliers['market_cap_to_volume_ratio'] = df_no_outliers['market_cap'] / \
+        df_no_outliers['total_volume']
+    print("Data after feature engineering:\n", df_no_outliers.head())
+
     return df_no_outliers  # return the DataFrame without outliers
 
 
@@ -56,11 +61,3 @@ def train_model(df):
     model.fit(X_train, y_train)
 
     return model
-
-
-# Example data
-data = [{'id': 'bitcoin', 'current_price': 50000, 'market_cap': 1000000000, 'total_volume': 50000000},
-        {'id': 'ethereum', 'current_price': 2000, 'market_cap': 500000000, 'total_volume': 20000000}]
-
-df = process_data(data)
-model = train_model(df)
