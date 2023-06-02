@@ -1,6 +1,8 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
+import numpy as np
+from scipy import stats
 
 
 def process_data(data):
@@ -13,7 +15,35 @@ def process_data(data):
     # Exclude 'id' column from the dataset
     df = df[numerical_columns]
 
-    return df
+    # Check for missing values in the DataFrame
+    missing_values = df.isnull()
+    print("Missing values in each column:\n", missing_values.sum())
+
+    # Fill missing values with a default value
+    df_filled = df.fillna(0)
+    print("Data after filling missing values:\n", df_filled.head())
+
+    # Alternatively, drop rows with missing values
+    df_dropped_rows = df.dropna()
+    print("Data after dropping rows with missing values:\n", df_dropped_rows.head())
+
+    # Check for missing values in the filled DataFrame
+    missing_values_filled = df_filled.isnull().sum()
+    print("Missing values in each column after filling:\n", missing_values_filled)
+
+    # Detect outliers using Z-score
+    z_scores = np.abs(stats.zscore(df_filled))
+    outliers = np.where(z_scores > 2.5)
+    print("Outliers detected at indices:\n", outliers)
+
+    # Remove outliers
+    df_no_outliers = df_filled[(z_scores < 2.5).all(axis=1)]
+    print("Data after removing outliers:\n", df_no_outliers.head())
+
+    # Check for inconsistencies in data types
+    print("Data types in each column:\n", df_no_outliers.dtypes)
+
+    return df_no_outliers  # return the DataFrame without outliers
 
 
 def train_model(df):
